@@ -25,7 +25,9 @@ function drawMap() {
 			continue;
 		}
 		if (mapdata[i] != ' ' && mapdata[i] != '	'){
+			drawTexture("font_background",[x,y], [1,1], 0.0, [1.0, 1.0, 1.0, 1.0]);
 			drawText(mapdata[i], [x, y], "right", [1.0, 1.0, 0.5, 0.5]);
+			
 			//drawTexture("grass", [x, y], [0.6, 0.6], 0.0, white);
 		}
 		++x;
@@ -85,6 +87,7 @@ function gameInit(){
 		loadTexture("tex/earth.png", "earth");
 		loadTexture("tex/grass.png", "grass");
 		loadTexture("tex/oceanpatch.png", "oceanpatch");
+		loadTexture("tex/font_background.png", "font_background");
 		loadSound("audio/dev_beep0_1.ogg", "jump");
 		loadSound("audio/mums.ogg", "mums");
 		loadMap("game.js");
@@ -170,6 +173,6 @@ function gameUpdate(time, dt){
 	
 	drawMap();
 	drawTexture("sammakko",[frog_x, frog_y], [0.6, 0.6], 0.0, [1.0, 4.0, 0.9, 0.8]);
-	drawTexture("earth", [], [0.6, 0.6], 0.0, [1.0, 4.0, 0.9, 0.8]);
+	drawTexture("earth", [0.6, 0.6], [0.6, 0.6], 0.0, [1.0, 4.0, 0.9, 0.8]);
 	//drawTexture("background",[0.0, 0.0], [0.0, 0.0], 0.0, [0.0]);
 }
