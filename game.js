@@ -14,21 +14,27 @@ var white= [1.0, 1.0, 1.0, 1.0];
 
 
 function drawMap() {
-	var positions = mapTilePositions("#");
-	for (var i = 0; i < positions.length; i++){
-		drawTexture("earth", positions[i], [0.6, 0.6], 0.0, white);
-	}
-	var positions = mapTilePositions("G");
-	for (var i = 0; i < positions.length; i++){
-		drawTexture("grass", positions[i], [0.6, 0.6], 0.0, white);
-	}
-	var positions = mapTilePositions("-");
-	for (var i = 0; i < positions.length; i++){
-		drawTexture("oceanpatch", positions[i], [0.6, 0.6], 0.0, white);
+	var positions = [];
+	var x= 0, y= 0;
+	
+	// TODO: use mapTilePositions()
+	for (var i = 0; i < mapdata.length; i++){
+		if (mapdata[i] == '\n'){
+			x = 0;
+			--y;
+			continue;
+		}
+		if (mapdata[i] != ' ' && mapdata[i] != '	'){
+			drawText(mapdata[i], [x, y], "right", [1.0, 1.0, 0.5, 0.5]);
+			//drawTexture("grass", [x, y], [0.6, 0.6], 0.0, white);
+		}
+		++x;
+		if (mapdata[i] == '	')
+			x += 3;
 	}
 }
 
-function mapTilePositions(symbol){
+function mapTilePositions(){
 	var positions = [];
 	var x= 0, y= 0;
 	
@@ -38,10 +44,12 @@ function mapTilePositions(symbol){
 			--y;
 			continue;
 		}
-		if (mapdata[i] == symbol){
+		if (mapdata[i] != ' ' && mapdata[i] != '	'){
 			positions.push([x, y]);
 		}
 		++x;
+		if (mapdata[i] == '	')
+			x += 3;
 	}
 	return positions;
 }
@@ -49,7 +57,7 @@ function mapTilePositions(symbol){
 function collisionCheck() {
 	frog_grounded = false;
 	
-	var positions = mapTilePositions("G").concat(mapTilePositions("#")).concat(mapTilePositions("-"));
+	var positions = mapTilePositions();
 	for (var i = 0; i < positions.length; i++){
 		var collision_result= rectRectCollision([frog_x, frog_y], [0.2, 0.2], positions[i], [0.5, 0.5]);
 		if (collision_result.side != collisionSide.none){
@@ -67,9 +75,8 @@ function collisionCheck() {
 
 function loadMap(mapName) {
 		mapdata = readFile(mapName);
-		var positions = mapTilePositions("@");
-		frog_x = positions[0][0];
-		frog_y = positions[0][1];
+		frog_x = 0;
+		frog_y = 0;
 }
 // Kutsutaan kun peli alkaa
 function gameInit(){
@@ -80,7 +87,7 @@ function gameInit(){
 		loadTexture("tex/oceanpatch.png", "oceanpatch");
 		loadSound("audio/dev_beep0_1.ogg", "jump");
 		loadSound("audio/mums.ogg", "mums");
-		loadMap("map1");
+		loadMap("game.js");
 }
 // Kutsutaan kun nappi painuu alas (ja joillain selaimilla kun nappia pidetään pohjassa)
 function onKeyPress(keyCode){

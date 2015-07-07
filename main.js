@@ -10,7 +10,7 @@ function init(){
 	
 	glInit();
 	inputInit();
-	netInit();
+	//netInit();
 	
 	if (g_experimental){
 		initExperimental();

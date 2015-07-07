@@ -1,8 +1,8 @@
 ﻿var g_input= { 	now: {},
 				prev: {},
-				allowedChars: 	"abcdefghijklmnopqrstuvwxyzåäö"+
-								"ABCDEFGHIJKLMNOPQRSTUVWXYZÅÄÖ"+
-								"01234567890.,:;+-*/_<> !\"#¤%&/()=?@£$€{[]}\\'^\r\n",
+				allowedChars: 	"abcdefghijklmnopqrstuvwxyzäö"+
+								"ABCDEFGHIJKLMNOPQRSTUVWXYZÄÖ"+
+								"01234567890.,_:;+-*/<> !\"#¤%&/()=?@£$€{[]}\\'^|\r\n",
 				inputMode: "keys", // "keys" or "text"
 				textModeExceptionKey: undefined, // A key for which key events are delivered even in text mode
 				writtenText: "" // Text written in inputMode == "text"

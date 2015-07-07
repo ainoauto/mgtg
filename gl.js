@@ -4,7 +4,7 @@ var glTextures= [];
 var glCam= {};
 var glCanvasCtx;
 var glFontInfo= {	fontName: "Comic Sans MS",
-					fontSize: 18,
+					fontSize: 60,
 					chars: g_input.allowedChars,
 					charSizes: {}, // In pixels
 					charUvs: {} // ll: lower_left, ur: upper_right
@@ -101,6 +101,7 @@ function glFontCacheInit(font_info){
 	
 	var tex_w= canvas.width;
 	var tex_h= canvas.height;
+	glCam.pixelSize = [tex_w, tex_h];
 	
 	var bounding= 3;
 	
@@ -209,6 +210,11 @@ function drawRect(pos, rad, rot, color){
 
 function drawTextureImpl(name, pos, rad, rot, color, uv){
 	tassert(glTextures[name] !== undefined, "texture doesn't exist: " + name);
+	
+	var ppos = worldToPixelCoords(pos);
+	if (	ppos[0] < 0 || ppos[1] < 0 ||
+			pos[0] > glCam.pixelSize[0] || pos[1] > glCam.pixelSize[1])
+		return;
 	
 	gl.uniform2f(glProg.posUniformLoc, pos[0], pos[1]);
 	gl.uniform2f(glProg.scaleUniformLoc, rad[0], rad[1]);
