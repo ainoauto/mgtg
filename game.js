@@ -10,6 +10,7 @@ var jumpTimer= 0.0;
 
 var ground= -0.8;
 var mapdata;
+var mapdata_color; // mapdata_color[i] == Color of tile mapdata[i]
 var white= [1.0, 1.0, 1.0, 1.0];
 
 
@@ -25,7 +26,7 @@ function drawMap() {
 			continue;
 		}
 		if (mapdata[i] != ' ' && mapdata[i] != '	'){
-			drawText(mapdata[i], [x, y], "right", [1.0, 1.0, 0.5, 0.5]);
+			drawText(mapdata[i], [x, y], "right", mapdata_color[i]);
 			//drawTexture("grass", [x, y], [0.6, 0.6], 0.0, white);
 		}
 		++x;
@@ -74,9 +75,45 @@ function collisionCheck() {
 }
 
 function loadMap(mapName) {
-		mapdata = readFile(mapName);
-		frog_x = 0;
-		frog_y = 0;
+	mapdata = readFile(mapName);
+	frog_x = 0;
+	frog_y = 0;
+	mapdata_color = [];
+	
+	// Choose colors for tiles
+	var color_state_none = 0;
+	var color_state_comment = 1;
+	var color_state_keyword = 2;
+	var color_state = color_state_none;
+	var color_by_state = [
+		[0.5, 0.5, 0.5, 1], // none
+		[0, 0, 1, 1], // comment
+		[0.5, 1, 0.5, 1], // keyword
+	];
+	var x = 0;
+	var y = 0;
+	for (var i = 0; i < mapdata.length; i++){
+		if (mapdata[i] == '\n'){
+			color_state = color_state_none;
+			x = 0;
+			--y;
+			continue;
+		}
+		if (mapdata[i] != ' ' && mapdata[i] != '	'){
+			// Test
+			if (mapdata[i] == '/')
+				color_state = color_state_comment;
+			else if (mapdata[i] == 'f')
+				color_state = color_state_keyword;
+		} else {
+			if (color_state != color_state_comment)
+				color_state = color_state_none;
+		}
+		mapdata_color[i] = color_by_state[color_state]
+		++x;
+		if (mapdata[i] == '	')
+			x += 3;
+	}
 }
 // Kutsutaan kun peli alkaa
 function gameInit(){
