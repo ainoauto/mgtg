@@ -1,15 +1,20 @@
-﻿// Sammakko 
-var frog_x= 0.0; // Paikka x-suunnassa
+					
+										
+															
+																				
+
+// Sammakko 
+var frog_x= -2.0; // Paikka x-suunnassa
 var frog_vx= 0.0; // Nopeus
 var frog_ax= 0.0; // Kiihtyvyys x-suunnassa
-var frog_y= -0.8;
+var frog_y= -2.0;
 var frog_vy= 0.0; // Nopeus y-suunnassa
 var frog_ay= 0.0; // Kiihtyvyys y-suunnassa
 var frog_grounded= false;
 var jumpTimer= 0.0;
 
-var ground= -0.8;
 var mapdata;
+var mapdata_color; // mapdata_color[i] == Color of tile mapdata[i]
 var white= [1.0, 1.0, 1.0, 1.0];
 
 
@@ -25,10 +30,8 @@ function drawMap() {
 			continue;
 		}
 		if (mapdata[i] != ' ' && mapdata[i] != '	'){
-			drawTexture("font_background",[x,y], [1,1], 0.0, [1.0, 1.0, 1.0, 1.0]);
-			drawText(mapdata[i], [x, y], "right", [1.0, 1.0, 0.5, 0.5]);
-			
-			//drawTexture("grass", [x, y], [0.6, 0.6], 0.0, white);
+			drawTexture("font_background",[x + 0.25,y], [0.5,0.5], 0.0, [1.0, 1.0, 1.0, 1.0]);
+			drawText(mapdata[i], [x, y], "right", mapdata_color[i]);
 		}
 		++x;
 		if (mapdata[i] == '	')
@@ -76,9 +79,43 @@ function collisionCheck() {
 }
 
 function loadMap(mapName) {
-		mapdata = readFile(mapName);
-		frog_x = 0;
-		frog_y = 0;
+	mapdata = readFile(mapName);
+	mapdata_color = [];
+	
+	// Choose colors for tiles
+	var color_state_none = 0;
+	var color_state_comment = 1;
+	var color_state_keyword = 2;
+	var color_state = color_state_none;
+	var color_by_state = [
+		[0.5, 0.5, 0.5, 1], // none
+		[0, 0, 1, 1], // comment
+		[0.5, 1, 0.5, 1], // keyword
+	];
+	var x = 0;
+	var y = 0;
+	for (var i = 0; i < mapdata.length; i++){
+		if (mapdata[i] == '\n'){
+			color_state = color_state_none;
+			x = 0;
+			--y;
+			continue;
+		}
+		if (mapdata[i] != ' ' && mapdata[i] != '	'){
+			// Test
+			if (mapdata[i] == '/')
+				color_state = color_state_comment;
+			else if (mapdata[i] == 'f')
+				color_state = color_state_keyword;
+		} else {
+			if (color_state != color_state_comment)
+				color_state = color_state_none;
+		}
+		mapdata_color[i] = color_by_state[color_state]
+		++x;
+		if (mapdata[i] == '	')
+			x += 3;
+	}
 }
 // Kutsutaan kun peli alkaa
 function gameInit(){
@@ -144,14 +181,11 @@ function onKeyRelease(keyCode){
 // dt on framen aika
 function gameUpdate(time, dt){
 	clearScreen();
-
-	frog_vx *= 0.7;
-	// Paikka muuttuu nopeuden ja aika-askeleen mukaisesti
-	frog_x += frog_vx*dt;
-	frog_vx += frog_ax*dt;
+	frog_ax = 0;
+	frog_ay = 0;
 	
-	frog_y += frog_vy*dt;
-	frog_vy += frog_ay*dt;
+	
+	
 	
 	collisionCheck();
 	
@@ -162,17 +196,30 @@ function gameUpdate(time, dt){
 	}
 	else {
 		frog_ay = -40.0; // Ilmassa
+		//frog_vx *= 0.1;
 		jumpTimer = jumpTimer -dt;
 	}
 	if (jumpTimer < 0){
 		jumpTimer = 0;
 	}
+	frog_ay += -frog_y * 20;
+	frog_ax += -frog_x * 20;
+	
+	frog_vx += frog_ax*dt;
+	frog_vy += frog_ay*dt;
+	
+	frog_vx *= 0.99;
+	frog_vy *= 0.99;
+	
+	frog_x += frog_vx*dt;
+	frog_y += frog_vy*dt;
+	
 	setCamera([frog_x, frog_y], 0.2);
 	
 	drawTexture("background",[frog_x/1.1, frog_y/1.1], [5.0, 5.0], 0.0, [1.0, 1.0, 1.0, 0.9]);
 	
 	drawMap();
 	drawTexture("sammakko",[frog_x, frog_y], [0.6, 0.6], 0.0, [1.0, 4.0, 0.9, 0.8]);
-	drawTexture("earth", [0.6, 0.6], [0.6, 0.6], 0.0, [1.0, 4.0, 0.9, 0.8]);
+	/*drawTexture("earth", [0.6, 0.6], [0.6, 0.6], 0.0, [1.0, 4.0, 0.9, 0.8]);*/
 	//drawTexture("background",[0.0, 0.0], [0.0, 0.0], 0.0, [0.0]);
 }
